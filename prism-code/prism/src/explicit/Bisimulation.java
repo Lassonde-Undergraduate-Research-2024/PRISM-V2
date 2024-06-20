@@ -92,7 +92,21 @@ public class Bisimulation<Value> extends PrismComponent
 			changed = splitDTMC(dtmc);
 		mainLog.println("Minimisation: " + numStates + " to " + numBlocks + " States");
 		//printPartition(dtmc);
-
+		Boolean result[] = new Boolean[numStates * numStates];
+		
+		for (int s = 0; s < numStates; s++) {
+			for (int t = 0; t < numStates; t++) {
+				if (partition[s] == partition[t])
+					result[s*numStates + t] = true;
+				else result[s*numStates + t] = false;
+			}
+		}
+		
+		for (int s = 0; s < numStates; s++) {
+		    for (int t = 0; t < numStates; t++) {
+		        System.out.print(result[s * numStates + t] + " ");
+		    }
+		    System.out.println();
 		// Build reduced model
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<>(numBlocks);
 		for (int i = 0; i < numBlocks; i++) {
