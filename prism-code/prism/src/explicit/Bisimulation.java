@@ -96,9 +96,7 @@ public class Bisimulation<Value> extends PrismComponent
 		
 		for (int s = 0; s < numStates; s++) {
 			for (int t = 0; t < numStates; t++) {
-				if (partition[s] == partition[t])
-					result[s*numStates + t] = true;
-				else result[s*numStates + t] = false;
+				result[s*numStates + t] = (partition[s] == partition[t]);
 			}
 		}
 		
