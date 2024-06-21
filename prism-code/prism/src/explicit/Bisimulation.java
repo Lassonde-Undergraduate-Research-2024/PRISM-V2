@@ -105,6 +105,7 @@ public class Bisimulation<Value> extends PrismComponent
 		        System.out.print(result[s * numStates + t] + " ");
 		    }
 		    System.out.println();
+		}
 		// Build reduced model
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<>(numBlocks);
 		for (int i = 0; i < numBlocks; i++) {
