@@ -47,6 +47,7 @@ public class Bisimulation<Value> extends PrismComponent
 	protected int[] partition;
 	protected int numBlocks;
 	protected MDPSimple<Value> mdp;
+	protected Boolean result[];
 
 	/**
 	 * Construct a new Bisimulation object.
@@ -92,7 +93,7 @@ public class Bisimulation<Value> extends PrismComponent
 			changed = splitDTMC(dtmc);
 		mainLog.println("Minimisation: " + numStates + " to " + numBlocks + " States");
 		//printPartition(dtmc);
-		Boolean result[] = new Boolean[numStates * numStates];
+		result = new Boolean[numStates * numStates];
 		
 		for (int s = 0; s < numStates; s++) {
 			for (int t = 0; t < numStates; t++) {
@@ -116,6 +117,9 @@ public class Bisimulation<Value> extends PrismComponent
 		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
 
 		return dtmcNew;
+	}
+	public Boolean[] getResult() {
+		return result;
 	}
 
 	/**
