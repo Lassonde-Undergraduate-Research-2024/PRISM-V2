@@ -12,7 +12,7 @@ import prism.PrismException;
 
 public class BuchholzTest {
 
-	public static final int MAXnumberOfStates = (int) 5;
+	public static final int MAXnumberOfStates = (int)5;
 	public static final int MAXnumberOfLabels = 2;
 	
 	public static DTMCSimple<Double> GenerateModel(int numberOfStates){
@@ -22,7 +22,7 @@ public class BuchholzTest {
 		
 		double threshold = 2 * Math.log(numberOfStates) / numberOfStates;
 		for (int source = 0; source < numberOfStates; source++) {
-			int outgoing = 0; // number of outgoing transitions of source
+			double outgoing = 0; // number of outgoing transitions of source
 			
 			
 			double[] probability = new double[numberOfStates];
@@ -35,16 +35,16 @@ public class BuchholzTest {
 			}
 			if (outgoing > 0) {
 				for (int target = 0; target < numberOfStates; target++) {
-					probability[target] /= outgoing;
+					
 					if(probability[target]/outgoing > 0.0) {
-						//System.out.println(source + " " + target + " " + probability[target]/outgoing);
+						System.out.println(source + " " + target + " " + probability[target]/outgoing);
 						dtmcSimple.setProbability(source, target, probability[target]/outgoing);						
 					}
 					
 				}
 			} else {
 				dtmcSimple.setProbability(source, source, 1.0);
-			//	System.out.println(source + " " + source + " " + 1);
+				System.out.println(source + " " + source + " " + 1);
 			}
 		}
 		return dtmcSimple;
@@ -53,26 +53,28 @@ public class BuchholzTest {
 	public static List<BitSet> Generatelabels(int numberOfStates, int numberOfLabels){
 		Random random = new Random();
 		List<BitSet> propBSs = new ArrayList<>();
-		for(int s = 0; s < numberOfStates; s++) {
-			
-			BitSet bitSet = new BitSet(numberOfLabels);
-			//System.out.print(s + ": ");
-			int mask = random.nextInt((1<<numberOfLabels));
-			
-			for(int i = 0; i < numberOfLabels; i++) {
-				if(((mask >> i)&1) == 1) {
-					bitSet.set(i, true);
-				//	System.out.print(i + " ");
-				}else {
-					bitSet.set(i, false);
-				}
-			}
+		for(int s = 0; s < numberOfLabels; s++) {
+			BitSet bitSet = new BitSet(numberOfStates);
 			propBSs.add(bitSet);
 		}
+		
+		for(int s = 0; s < numberOfStates; s++) {
+			int mask = random.nextInt((1<<numberOfLabels));
+			for(int i = 0; i < numberOfLabels; i++) {
+				if(((mask >> i)&1) == 1) {
+					propBSs.get(i).set(s, true);
+				}else {
+					propBSs.get(i).set(s, false);
+				}
+			}
+			
+			//propBSs.add(bitSet);
+		}
+			
 		System.out.println("Labels");
-		for(int i = 0; i < numberOfStates; i++) {
+		for(int i = 0; i < numberOfLabels; i++) {
 			System.out.print(i + ": ");
-			for(int j = 0; j < numberOfLabels; j++) {
+			for(int j = 0; j < numberOfStates; j++) {
 				//System.out.print(i+ " "+ j +" ::");
 				if(propBSs.get(i).get(j))
 					System.out.print(1);
@@ -86,24 +88,29 @@ public class BuchholzTest {
 	}
 	
 	
-	
-    public static void main(String[] args) {
+	 private static void RandomModel() {
         try {
             PrismComponent parent = new PrismComponent() {
             };
-
             
+            System.out.println("--------------------------------------------");
             Random random = new Random();
     		int numberOfStates = random.nextInt(MAXnumberOfStates) + 1;
     		int numberOfLabels = random.nextInt(MAXnumberOfLabels) + 1;
     		System.out.println(numberOfStates + " " + numberOfLabels);
     		DTMCSimple<Double> dtmc = GenerateModel(numberOfStates);
     		List<BitSet> propBSs = Generatelabels(numberOfStates, numberOfLabels);
+//    		
+//            int numberOfStates = 7;
+//            int numberOfLabels = 1;
+//            System.out.println(numberOfStates + " " + numberOfLabels);
+//            DTMCSimple<Double> dtmc = GenerateModel(numberOfStates); //new DTMCSimple<Double>(numberOfStates);
+//    		List<BitSet> propBSs = Generatelabels(numberOfStates, numberOfLabels);
+//    		
+//    		
     		
-       
-            System.out.println(dtmc.toString());
-            
-            Buchholz<Double> buchholz = new Buchholz<>(parent);
+    		System.out.println(dtmc.toString());
+    		Buchholz<Double> buchholz = new Buchholz<>(parent);
             boolean[] buch = buchholz.bisimilar(dtmc, propBSs);
             //*
     		System.out.println("buchholz:");
@@ -121,8 +128,10 @@ public class BuchholzTest {
     		//*/
     		
     		
-    		 Bisimulation<Double> bism = new Bisimulation<>(parent);
-             boolean[] bisimilation = bism.bisimilar(dtmc, propBSs);
+    		
+    		
+    		Bisimulation<Double> bism = new Bisimulation<>(parent);
+            boolean[] bisimilation = bism.bisimilar(dtmc, propBSs);
              //*
      		System.out.println("bisimilation:");
      		for(int i = 0; i < numberOfStates; i++) {
@@ -136,10 +145,44 @@ public class BuchholzTest {
      			}
      			System.out.println('\n');
      		}
+     		
+     		
+     		
+     		///// compare the result
+    		for(int i = 0; i < numberOfStates; i++) {
+    			for(int j = 0; j < numberOfStates; j++) {
+    				if(bisimilation[i*numberOfStates+j] != buch[i*numberOfStates+j]) {
+    					System.out.println("Erorr!! " + i + " " + j + " " + bisimilation[i*numberOfStates + j] + " " + buch[i*numberOfStates + j]);
+    					//System.out.println(" " + PrismBisimulation[i*numberOfStates + j] + ' ' + ZeroDerisaviRes[i*numberOfStates + j]);
+    					System.out.println(dtmc.toString());
+    					
+    					System.exit(0);
+    				}
+    				
+    			}
+    		}
+    		
+    		System.out.println("okay");
      		//*/
 
+     		//DTMC<Double> newdtmc = bism.minimiseDTMC(dtmc, null, propBSs);
+     		//System.out.println(newdtmc.toString());
+     		
+     		
         } catch (PrismException e) {
             e.printStackTrace();
         }
     }
+	 
+	 
+	 
+	 
+		
+		
+	 public static void main(String[] args) {
+		 for(int i = 0; i < 100; i++)
+				RandomModel();
+	 }
+	 
+	 
 }
