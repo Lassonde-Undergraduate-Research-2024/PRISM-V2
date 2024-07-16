@@ -165,7 +165,7 @@ public class Bisimulation<Value> extends PrismComponent
 		BitSet bs1, bs0;
 		numStates = model.getNumStates();
 		partition = new int[numStates];
-		
+
 		// Compute all non-empty combinations of propositions
 		List<BitSet> all = new ArrayList<BitSet>();
 		bs1 = (BitSet) propBSs.get(0).clone();
@@ -192,6 +192,7 @@ public class Bisimulation<Value> extends PrismComponent
 		}
 
 		// Construct initial partition
+		all.removeIf(BitSet::isEmpty);
 		numBlocks = all.size();
 		for (int j = 0; j < numBlocks; j++) {
 			BitSet bs = all.get(j);
@@ -231,6 +232,7 @@ public class Bisimulation<Value> extends PrismComponent
 				Map.Entry<Integer, Value> e = iter.next();
 				distrNew.add(partition[e.getKey()], e.getValue());
 			}
+			mainLog.println(s + " " + distrNew.toString());
 			// Store in MDP, update new partition
 			a = partition[s];
 			numChoicesOld = mdp.getNumChoices(a);
@@ -240,19 +242,20 @@ public class Bisimulation<Value> extends PrismComponent
 			partitionNew[s] = (Integer) mdp.getAction(a, i);
 		}
 		// Debug info
-		//mainLog.println("New partition: " + java.util.Arrays.toString(partitionNew));
-		//mainLog.println("Signatures MDP: " + mdp.infoString());
-		//mainLog.println("Signatures MDP: " + mdp);
+		mainLog.println("New partition: " + java.util.Arrays.toString(partitionNew));
+		mainLog.println("Signatures MDP: " + mdp.infoString());
+		mainLog.println("Signatures MDP: " + mdp);
+		//mainLog.println("numBlocksNew:" + numBlocksNew);
+		//mainLog.println("numBlocks:" + numBlocks);
 		//try { mdp.exportToDotFile("mdp.dot"); } catch (PrismException e) {}
 		// Update info
 		boolean changed = numBlocks != numBlocksNew;
-		if (changed) {
-			// Note, once converged, we keep the partition from the previous iter
-			// because the transition info in the MDP is in terms of this
-			partition = partitionNew;
+		if(changed)
+		{
 			numBlocks = numBlocksNew;
+			partition = partitionNew;
+			
 		}
-
 		return changed;
 	}
 
