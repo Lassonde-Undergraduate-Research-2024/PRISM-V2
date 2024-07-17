@@ -202,10 +202,10 @@ public class Bisimulation<Value> extends PrismComponent
 		}
 		
 		
-		System.out.println("partition:");
-		for(int i = 0; i < numStates; i++)
-			System.out.print(partition[i] + " ");
-		System.out.println(" ");
+//		System.out.println("partition:");
+//		for(int i = 0; i < numStates; i++)
+//			System.out.print(partition[i] + " ");
+//		System.out.println(" ");
 	}
 
 	/**
@@ -254,7 +254,6 @@ public class Bisimulation<Value> extends PrismComponent
 		{
 			numBlocks = numBlocksNew;
 			partition = partitionNew;
-			
 		}
 		return changed;
 	}

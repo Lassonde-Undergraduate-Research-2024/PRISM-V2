@@ -130,13 +130,11 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 		
 		if (!(dtmc instanceof DTMCSimple)) 
 			throw new IllegalArgumentException("Expected an instance of DTMCSimple.");
-		   
-		numStates = dtmc.getNumStates();
 		initialisePartitionInfo(dtmc, propBSs); 
 		List<Set<Integer>> classes = decide((DTMCSimple<Value>) dtmc, propBSs);
-		numBlocks = classes.size();
 				
 		
+		numBlocks = classes.size();
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<>(numBlocks);
 		int[] clazzOf = new int[numStates];		
 		int id = 0;
@@ -147,17 +145,17 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 			id++;
 		}
 		
-		
-		for (int i = 0; i < numBlocks; i++) {
+		int NumberOfStates = dtmc.getNumStates();
+		for (int i = 0; i < NumberOfStates; i++) {
 			int s = clazzOf[i];
-			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(s);
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(i);
 			while (iter.hasNext()) {
 				Map.Entry<Integer, Value> e = iter.next();
 				dtmcNew.addToProbability(s, clazzOf[e.getKey()], e.getValue());
 			}
 		}
 		
-		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
+		//attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
 
 		return dtmcNew;
 		
@@ -175,12 +173,12 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 		
 		List<Set<Integer>> classes = decide((DTMCSimple<Value>) dtmc, propBSs);
 		
-		int NumberOfStates = dtmc.getNumStates();
-		boolean[] bisimilar = new boolean[NumberOfStates * NumberOfStates];
+	
+		boolean[] bisimilar = new boolean[numStates * numStates];
 		for (Set<Integer> clazz : classes) {
 			for (Integer s : clazz) {
 				for (Integer t : clazz) {
-					bisimilar[s * NumberOfStates + t] = true;
+					bisimilar[s * numStates + t] = true;
 				}
 			}
 		}

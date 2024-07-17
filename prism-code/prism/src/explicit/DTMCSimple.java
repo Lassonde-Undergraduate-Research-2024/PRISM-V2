@@ -240,6 +240,9 @@ public class DTMCSimple<Value> extends DTMCExplicit<Value> implements ModelSimpl
 
 	// Accessors (for Model)
 
+	public Value getProbability(int s, int t) {
+		return trans.get(s).get(t);
+	}
 	@Override
 	public int getNumTransitions()
 	{

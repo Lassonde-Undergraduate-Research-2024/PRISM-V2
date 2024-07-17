@@ -12,7 +12,7 @@ import prism.PrismException;
 
 public class BuchholzTest {
 
-	public static final int MAXnumberOfStates = (int)5;
+	public static final int MAXnumberOfStates = (int) 1000;
 	public static final int MAXnumberOfLabels = 2;
 	
 	public static DTMCSimple<Double> GenerateModel(int numberOfStates){
@@ -37,14 +37,14 @@ public class BuchholzTest {
 				for (int target = 0; target < numberOfStates; target++) {
 					
 					if(probability[target]/outgoing > 0.0) {
-						System.out.println(source + " " + target + " " + probability[target]/outgoing);
+						//System.out.println(source + " " + target + " " + probability[target]/outgoing);
 						dtmcSimple.setProbability(source, target, probability[target]/outgoing);						
 					}
 					
 				}
 			} else {
 				dtmcSimple.setProbability(source, source, 1.0);
-				System.out.println(source + " " + source + " " + 1);
+			//	System.out.println(source + " " + source + " " + 1);
 			}
 		}
 		return dtmcSimple;
@@ -71,18 +71,18 @@ public class BuchholzTest {
 			//propBSs.add(bitSet);
 		}
 			
-		System.out.println("Labels");
-		for(int i = 0; i < numberOfLabels; i++) {
-			System.out.print(i + ": ");
-			for(int j = 0; j < numberOfStates; j++) {
-				//System.out.print(i+ " "+ j +" ::");
-				if(propBSs.get(i).get(j))
-					System.out.print(1);
-				else
-					System.out.print(0);
-			}
-			System.out.println(" ");
-		}
+//		System.out.println("Labels");
+//		for(int i = 0; i < numberOfLabels; i++) {
+//			System.out.print(i + ": ");
+//			for(int j = 0; j < numberOfStates; j++) {
+//				//System.out.print(i+ " "+ j +" ::");
+//				if(propBSs.get(i).get(j))
+//					System.out.print(1);
+//				else
+//					System.out.print(0);
+//			}
+//			System.out.println(" ");
+//		}
 		
 		return propBSs;
 	}
@@ -93,66 +93,82 @@ public class BuchholzTest {
             PrismComponent parent = new PrismComponent() {
             };
             
-            System.out.println("--------------------------------------------");
+            //System.out.println("--------------------------------------------");
             Random random = new Random();
     		int numberOfStates = random.nextInt(MAXnumberOfStates) + 1;
     		int numberOfLabels = random.nextInt(MAXnumberOfLabels) + 1;
-    		System.out.println(numberOfStates + " " + numberOfLabels);
+    		//System.out.println(numberOfStates + " " + numberOfLabels);
     		DTMCSimple<Double> dtmc = GenerateModel(numberOfStates);
     		List<BitSet> propBSs = Generatelabels(numberOfStates, numberOfLabels);
-//    		
+    		
 //            int numberOfStates = 7;
 //            int numberOfLabels = 1;
 //            System.out.println(numberOfStates + " " + numberOfLabels);
 //            DTMCSimple<Double> dtmc = GenerateModel(numberOfStates); //new DTMCSimple<Double>(numberOfStates);
 //    		List<BitSet> propBSs = Generatelabels(numberOfStates, numberOfLabels);
-//    		
-//    		
+// 		
     		
-    		System.out.println(dtmc.toString());
+    		//System.out.println(dtmc.toString());
+    		
     		Buchholz<Double> buchholz = new Buchholz<>(parent);
-            boolean[] buch = buchholz.bisimilar(dtmc, propBSs);
-            //*
-    		System.out.println("buchholz:");
-    		for(int i = 0; i < numberOfStates; i++) {
-    			for(int j = 0; j < numberOfStates; j++) {
-    				if(buch[i*numberOfStates + j]) {
-    					System.out.print(1 + " ");						
-    				}else {
-    					System.out.print(0 + " ");
-    				}
-    				
-    			}
-    			System.out.println('\n');
-    		}
-    		//*/
+            boolean[] Buch = buchholz.bisimilar(dtmc, propBSs);
+//    		System.out.println("buchholz:");
+//    		for(int i = 0; i < numberOfStates; i++) {
+//    			for(int j = 0; j < numberOfStates; j++) {
+//    				if(Buch[i*numberOfStates + j]) {
+//    					System.out.print(1 + " ");						
+//    				}else {
+//    					System.out.print(0 + " ");
+//    				}
+//    				
+//    			}
+//    			System.out.println('\n');
+//    		}
+    
     		
     		
+    		ZeroDerisavi<Double> zero = new ZeroDerisavi<>(parent);
+            boolean[] Zero = zero.bisimilar(dtmc, propBSs);
+//    		System.out.println("ZeroDerisavi:");
+//    		for(int i = 0; i < numberOfStates; i++) {
+//    			for(int j = 0; j < numberOfStates; j++) {
+//    				if(Zero[i*numberOfStates + j]) {
+//    					System.out.print(1 + " ");						
+//    				}else {
+//    					System.out.print(0 + " ");
+//    				}
+//    				
+//    			}
+//    			System.out.println('\n');
+//    		}
+    		
+            ZeroDerisaviRedBlack<Double> zerorb = new ZeroDerisaviRedBlack<>(parent);
+            boolean[] ZeroRB = zerorb.bisimilar(dtmc, propBSs);
     		
     		
-    		Bisimulation<Double> bism = new Bisimulation<>(parent);
-            boolean[] bisimilation = bism.bisimilar(dtmc, propBSs);
-             //*
-     		System.out.println("bisimilation:");
-     		for(int i = 0; i < numberOfStates; i++) {
-     			for(int j = 0; j < numberOfStates; j++) {
-     				if(bisimilation[i*numberOfStates + j]) {
-     					System.out.print(1 + " ");						
-     				}else {
-     					System.out.print(0 + " ");
-     				}
-     				
-     			}
-     			System.out.println('\n');
-     		}
-     		
+//    		Bisimulation<Double> bism = new Bisimulation<>(parent);
+//            boolean[] bisimilation = bism.bisimilar(dtmc, propBSs);
+//     		System.out.println("bisimilation:");
+//     		for(int i = 0; i < numberOfStates; i++) {
+//     			for(int j = 0; j < numberOfStates; j++) {
+//     				if(bisimilation[i*numberOfStates + j]) {
+//     					System.out.print(1 + " ");						
+//     				}else {
+//     					System.out.print(0 + " ");
+//     				}
+//     				
+//     			}
+//     			System.out.println('\n');
+//     		}
+//     		
      		
      		
      		///// compare the result
     		for(int i = 0; i < numberOfStates; i++) {
     			for(int j = 0; j < numberOfStates; j++) {
-    				if(bisimilation[i*numberOfStates+j] != buch[i*numberOfStates+j]) {
-    					System.out.println("Erorr!! " + i + " " + j + " " + bisimilation[i*numberOfStates + j] + " " + buch[i*numberOfStates + j]);
+    				if(Buch[i*numberOfStates+j] != Zero[i*numberOfStates+j] ||
+    						Buch[i*numberOfStates+j] != ZeroRB[i*numberOfStates+j] 	) {
+    					System.out.println("Erorr!! " + i + " " + j + " " + Zero[i*numberOfStates + j] + " " + Buch[i*numberOfStates + j]);
     					//System.out.println(" " + PrismBisimulation[i*numberOfStates + j] + ' ' + ZeroDerisaviRes[i*numberOfStates + j]);
     					System.out.println(dtmc.toString());
     					
@@ -180,7 +196,7 @@ public class BuchholzTest {
 		
 		
 	 public static void main(String[] args) {
-		 for(int i = 0; i < 100; i++)
+		 for(int i = 0; i < 1000; i++)
 				RandomModel();
 	 }
 	 
