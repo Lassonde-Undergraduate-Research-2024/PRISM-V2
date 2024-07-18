@@ -232,7 +232,7 @@ public class Bisimulation<Value> extends PrismComponent
 				Map.Entry<Integer, Value> e = iter.next();
 				distrNew.add(partition[e.getKey()], e.getValue());
 			}
-			mainLog.println(s + " " + distrNew.toString());
+			//mainLog.println(s + " " + distrNew.toString());
 			// Store in MDP, update new partition
 			a = partition[s];
 			numChoicesOld = mdp.getNumChoices(a);
@@ -242,9 +242,9 @@ public class Bisimulation<Value> extends PrismComponent
 			partitionNew[s] = (Integer) mdp.getAction(a, i);
 		}
 		// Debug info
-		mainLog.println("New partition: " + java.util.Arrays.toString(partitionNew));
-		mainLog.println("Signatures MDP: " + mdp.infoString());
-		mainLog.println("Signatures MDP: " + mdp);
+		//mainLog.println("New partition: " + java.util.Arrays.toString(partitionNew));
+		//mainLog.println("Signatures MDP: " + mdp.infoString());
+		//mainLog.println("Signatures MDP: " + mdp);
 		//mainLog.println("numBlocksNew:" + numBlocksNew);
 		//mainLog.println("numBlocks:" + numBlocks);
 		//try { mdp.exportToDotFile("mdp.dot"); } catch (PrismException e) {}

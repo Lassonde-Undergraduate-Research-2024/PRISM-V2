@@ -559,7 +559,8 @@ public class MDPSimple<Value> extends MDPExplicit<Value> implements NondetModelS
 	 */
 	public int indexOfChoice(int s, Distribution<Value> distr)
 	{
-		return trans.get(s).indexOf(distr);
+		List<Distribution<Value>> set = trans.get(s);
+		return set.indexOf(distr);
 	}
 
 	/**

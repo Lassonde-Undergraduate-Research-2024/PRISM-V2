@@ -51,6 +51,7 @@ public class Distribution<Value> implements FunctionalIterable<Entry<Integer, Va
 	
 	/** Evaluator for manipulating probability values in the distribution (of type {@code Value}) */
 	protected final Evaluator<Value> eval;
+	public static final double ACCURACY = 1E-8;
 
 	/**
 	 * Create an empty distribution
@@ -309,7 +310,19 @@ public class Distribution<Value> implements FunctionalIterable<Entry<Integer, Va
 		if (! (o instanceof Distribution)) {
 			return false;
 		}
-		return map.equals(((Distribution<?>) o).map);
+		Distribution<?> that = (Distribution<?>) o;
+		if(this.map.size() != that.map.size()) {
+			return false;
+		}
+		for (Map.Entry<Integer, Value> entry : this.map.entrySet()) {
+			Value value1 = entry.getValue();
+            Value value2 = (Value) that.map.get(entry.getKey());
+            if(value2 == null || Math.abs(eval.toDouble(value1) - eval.toDouble(value2)) >= ACCURACY) {
+            	return false;
+            }
+		}
+		return true;
+		
 	}
 
 	@Override
