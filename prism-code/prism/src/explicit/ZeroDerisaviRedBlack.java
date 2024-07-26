@@ -468,7 +468,7 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 				dtmcNew.addToProbability(s, blockOf[e.getKey()], e.getValue());
 			}
 		}
-		//attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
+		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
 		return dtmcNew;
 	}
 	

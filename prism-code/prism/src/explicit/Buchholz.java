@@ -155,7 +155,7 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 			}
 		}
 		
-		//attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
+		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
 
 		return dtmcNew;
 		
