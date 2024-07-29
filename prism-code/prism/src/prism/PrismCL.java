@@ -1952,6 +1952,7 @@ public class PrismCL implements PrismModelListener
 				// explicit-state model construction
 				else if (sw.equals("explicitbuild")) {
 					explicitbuild = true;
+					prism.setEngine(Prism.EXPLICIT); 
 				}
 				// (hidden) option for testing of prototypical explicit-state model construction
 				else if (sw.equals("explicitbuildtest")) {
