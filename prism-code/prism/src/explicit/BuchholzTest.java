@@ -12,8 +12,8 @@ import prism.PrismException;
 
 public class BuchholzTest {
 
-	public static final int MAXnumberOfStates = (int) 10;
-	public static final int MAXnumberOfLabels = 1;
+	public static final int MAXnumberOfStates = (int) 1000;
+	public static final int MAXnumberOfLabels = 2;
 	
 	public static DTMCSimple<Double> GenerateModel(int numberOfStates){
 		
@@ -161,8 +161,12 @@ public class BuchholzTest {
             boolean[] bisimilation = bism.bisimilar(dtmc, propBSs);
             
             
-            Bisimulation<Double> prim = new Primitive(parent);
+            Bisimulation<Double> prim = new Primitive<>(parent);
             boolean[] primitive = prim.bisimilar(dtmc, propBSs);
+            
+            
+            Bisimulation<Double> Newalgo = new ProbabilisticBisimilarity<>(parent);
+            boolean[] newalgo = Newalgo.bisimilar(dtmc, propBSs);
             
 //     		System.out.println("bisimilation:");
 //     		for(int i = 0; i < numberOfStates; i++) {
@@ -184,7 +188,7 @@ public class BuchholzTest {
     			for(int j = 0; j < numberOfStates; j++) {
     				if(Buch[i*numberOfStates+j] != bisimilation[i*numberOfStates+j] ||
     					Buch[i*numberOfStates+j] != ZeroRB[i*numberOfStates+j] 	||
-    					Buch[i*numberOfStates+j] != Zero[i*numberOfStates+j]) {
+    					Buch[i*numberOfStates+j] != newalgo[i*numberOfStates+j]) {
     					System.out.println("Erorr!! " + i + " " + j + " " + primitive[i*numberOfStates + j] + " " + Buch[i*numberOfStates + j]);
     					System.out.println(dtmc.toString());
     					System.exit(0);
@@ -196,15 +200,15 @@ public class BuchholzTest {
     		System.out.println("okay");
      		//*/
 
-     		DTMC<Double> newdtmc = buchholz.minimiseDTMC(dtmc, null, propBSs);
-     		System.out.println(newdtmc.toString());
-     		newdtmc = zero.minimiseDTMC(dtmc, null, propBSs);
-     		System.out.println(newdtmc.toString());
-     		newdtmc = zerorb.minimiseDTMC(dtmc, null, propBSs);
-     		System.out.println(newdtmc.toString());
-     		newdtmc = prim.minimiseDTMC(dtmc, null, propBSs);
-     		System.out.println(newdtmc.toString());
-     		
+//     		DTMC<Double> newdtmc = Newalgo.minimiseDTMC(dtmc, null, propBSs);
+//     		System.out.println(newdtmc.toString());
+//     		newdtmc = zero.minimiseDTMC(dtmc, null, propBSs);
+//     		System.out.println(newdtmc.toString());
+//     		newdtmc = zerorb.minimiseDTMC(dtmc, null, propBSs);
+//     		System.out.println(newdtmc.toString());
+//     		newdtmc = bism.minimiseDTMC(dtmc, null, propBSs);
+//     		System.out.println(newdtmc.toString());
+//     		
      		
         } catch (PrismException e) {
             e.printStackTrace();
