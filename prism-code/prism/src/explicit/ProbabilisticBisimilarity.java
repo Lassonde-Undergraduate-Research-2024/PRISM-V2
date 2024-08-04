@@ -214,26 +214,34 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 
 		numBlocks = 0;
 		partition = new int[numStates];	
+		int[] stateOf = new int[numStates];
 		for (List<Integer> block : Partition) {
 			if(block.isEmpty())
 				continue;
 			for (Integer s : block) {
 				partition[s] = numBlocks;
+				stateOf[numBlocks] = s;
 			}
 			numBlocks++;
 		}
 
+		//long startTime, endTime;
+        	//startTime = System.currentTimeMillis();
+		
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
-
-		for (int source = 0; source < numStates; source++) {
-			Iterator<Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(source);
-			
+	
+		for(int b = 0; b < numBlocks; b++) {
+			int s = stateOf[b];
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(s);
 			while (iter.hasNext()) {
 				Map.Entry<Integer, Value> e = iter.next();
-				dtmcNew.addToProbability(partition[source], partition[e.getKey()], e.getValue());
-
+				dtmcNew.addToProbability(b, partition[e.getKey()], e.getValue());
 			}
+			
 		}
+	
+		endTime = System.currentTimeMillis();
+		//mainLog.println("Time taken for NewAlgorithem at the end: " + (endTime - startTime) + " milliseconds");
 		
 		
 		
