@@ -240,7 +240,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 			
 		}
 	
-		endTime = System.currentTimeMillis();
+		//endTime = System.currentTimeMillis();
 		//mainLog.println("Time taken for NewAlgorithem at the end: " + (endTime - startTime) + " milliseconds");
 		
 		
