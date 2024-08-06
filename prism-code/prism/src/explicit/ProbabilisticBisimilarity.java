@@ -3,16 +3,11 @@ package explicit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
-import explicit.DTMCSimple;
-import explicit.Distribution;
-import explicit.ModelSimple;
 import prism.Evaluator;
 import prism.PrismComponent;
 import prism.PrismException;
@@ -33,8 +28,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 	}
 	
 	
-	protected static Partition partition;
-	protected static int numberOfStates;
+	protected static Partition Partition;
 	protected static int numberOfLabels;
 	/**
 	 * Decides probabilistic bisimilarity for the given labelled Markov chain.
@@ -45,7 +39,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 	 */
 	public void decide(DTMC<Value> dtmc, List<BitSet> propBSs) {
 		Evaluator<Value> eval = dtmc.getEvaluator();
-		numberOfStates = dtmc.getNumStates(); 
+		numStates = dtmc.getNumStates(); 
 		numberOfLabels = propBSs.size();
 
 		/*
@@ -55,7 +49,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 
 		final BitSet one = (BitSet) propBSs.get(0).clone();
 		final BitSet notOne = (BitSet) one.clone();
-		notOne.flip(0, numberOfStates);
+		notOne.flip(0, numStates);
 		if (!one.isEmpty()) { // ADDED
 			initial.add(one);
 		}
@@ -82,7 +76,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 		int numberOfBlocks = initial.size();
 
 		// partition
-		partition = new Partition(numberOfStates, initial);
+		Partition = new Partition(numStates, initial);
 
 		// first potential splitter
 		int first = 0; 
@@ -98,22 +92,22 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 		/*
 		 * for all 0 <= s < numberOfStates : hasBeenChecked[s] = state s has been checked in the current round 
 		 */
-		final boolean[] hasBeenChecked = new boolean[numberOfStates];
+		final boolean[] hasBeenChecked = new boolean[numStates];
 
 		/*
 		 * for all 0 <= s < numberOfStates : index[state] = index of state in toCheck
 		 */
-		final int[] index = new int[numberOfStates];
+		final int[] index = new int[numStates];
 
 		/*
 		 * for all 0 <= target < numberOfStates : predecessors[target] contains (source, probability)
 		 * if source transitions to target with probability. 
 		 */
-		final List<Edge>[] predecessors = new List[numberOfStates]; // use LinkedHashMap?
-		for (int target = 0; target < numberOfStates; target++) {
+		final List<Edge>[] predecessors = new List[numStates]; // use LinkedHashMap?
+		for (int target = 0; target < numStates; target++) {
 			predecessors[target] = new ArrayList<Edge>();
 		}		
-		for (int source = 0; source < numberOfStates; source++) {
+		for (int source = 0; source < numStates; source++) {
 
 			Iterator<Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(source);
 			while (iter.hasNext()) {
@@ -128,14 +122,14 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 			toCheck.clearisFirst();
 			toCheck.clear();
 			for (int block = first; block <= last; block++) { // loop through new blocks created in previous round
-				for (int target : partition.getStates(block)) { // loop through states of block permutation[block]
+				for (int target : Partition.getStates(block)) { // loop through states of block permutation[block]
 					for (Edge edge : predecessors[target]) { // loop through incoming transitions of state
 						int source = edge.getSource();
 						double weight = edge.getWeight();
 						if (!hasBeenChecked[source]) { // first time we are visiting source state in this round; create a new signature for it
 							hasBeenChecked[source] = true;
 							index[source] = toCheck.size();
-							toCheck.add(new Signature(source, partition.getBlock(source), block, weight), false);
+							toCheck.add(new Signature(source, Partition.getBlock(source), block, weight), false);
 						} else { // already visited source in this round; so simply add edge.weight to weight of block b in e.source's signature
 							toCheck.get(index[source]).add(block, weight);
 						}
@@ -153,7 +147,6 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 			while (numberChecked < numberToCheck) {
 				int maxSize = 0;
 				int maxBlock = 0;
-				int sumOfSizes = 0;
 				int oldBlock = toCheck.get(numberChecked).getOldBlock();
 				while (numberChecked < numberToCheck && toCheck.get(numberChecked).getOldBlock() == oldBlock) { // out of bounds
 					ArrayList<Integer> newBlock = new ArrayList<Integer>();
@@ -163,23 +156,22 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 						numberChecked++;
 					} while (numberChecked < numberToCheck && !toCheck.isFirst(numberChecked));
 
-					if (newBlock.size() != partition.getStates(oldBlock).size()) { 
+					if (newBlock.size() != Partition.getStates(oldBlock).size()) { 
 						// create new block
-						partition.createNewBlock(newBlock);
+						Partition.createNewBlock(newBlock);
 						//partition.refine(oldBlock, newBlock);
 						last++;
 						int size = newBlock.size();
-						sumOfSizes += size;
 						if (size > maxSize) { // keep track of largest sub-block of split block
 							maxBlock = last;
 							maxSize = size;
 						}
 					}
 				}
-				partition.refine(oldBlock);
-				if (maxSize > partition.getStates(oldBlock).size()) {
+				Partition.refine(oldBlock);
+				if (maxSize > Partition.getStates(oldBlock).size()) {
 
-					partition.swap(maxBlock, oldBlock);
+					Partition.swap(maxBlock, oldBlock);
 				}
 			}
 		}
@@ -195,11 +187,11 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 
 		//initialisePartitionInfo(dtmc, propBSs); 
 		decide(dtmc, propBSs);
-		final boolean[] bisimilar = new boolean[numberOfStates*numberOfStates];
-		for (List<Integer> block : partition) {
+		final boolean[] bisimilar = new boolean[numStates*numStates];
+		for (List<Integer> block : Partition) {
 			for (Integer s : block) {
 				for (Integer t : block) {
-					bisimilar[s*numberOfStates+t] = true;
+					bisimilar[s*numStates+t] = true;
 				}
 			}
 		}
@@ -213,29 +205,32 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 		decide(dtmc, propBSs);
 
 
-		int numBlocks = 0;
-		int[] blockOf = new int[numberOfStates];	
-		for (List<Integer> block : partition) {
+		numBlocks = 0;
+		partition = new int[numStates];	
+		int[] stateOf = new int[numStates];
+		for (List<Integer> block : Partition) {
 			if(block.isEmpty())
 				continue;
 			for (Integer s : block) {
-				blockOf[s] = numBlocks;
+				partition[s] = numBlocks;
+				stateOf[numBlocks] = s;
 			}
 			numBlocks++;
 		}
 
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
-
-		for (int source = 0; source < numberOfStates; source++) {
-			Iterator<Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(source);
-			
+	
+		for(int b = 0; b < numBlocks; b++) {
+			int s = stateOf[b];
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(s);
 			while (iter.hasNext()) {
 				Map.Entry<Integer, Value> e = iter.next();
-				dtmcNew.addToProbability(blockOf[source], blockOf[e.getKey()], e.getValue());
-
+				dtmcNew.addToProbability(b, partition[e.getKey()], e.getValue());
 			}
+			
 		}
-
+		
+		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
 		return dtmcNew;
 	}
 

@@ -134,27 +134,29 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 		List<Set<Integer>> classes = decide((DTMCSimple<Value>) dtmc, propBSs);
 				
 		
+		numStates = dtmc.getNumStates();
 		numBlocks = classes.size();
-		DTMCSimple<Value> dtmcNew = new DTMCSimple<>(numBlocks);
-		int[] clazzOf = new int[numStates];		
+		
+		int[] stateOf = new int[numStates];
 		int id = 0;
 		for (Set<Integer> clazz : classes) {
 			for (Integer s : clazz) {
-				clazzOf[s] = id;
+				partition[s] = id;
+				stateOf[id] = s;
 			}
 			id++;
 		}
-		
-		int NumberOfStates = dtmc.getNumStates();
-		for (int i = 0; i < NumberOfStates; i++) {
-			int s = clazzOf[i];
-			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(i);
+
+		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
+		for(int b = 0; b < numBlocks; b++) {
+			int s = stateOf[b];
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(s);
 			while (iter.hasNext()) {
 				Map.Entry<Integer, Value> e = iter.next();
-				dtmcNew.addToProbability(s, clazzOf[e.getKey()], e.getValue());
+				dtmcNew.addToProbability(b, partition[e.getKey()], e.getValue());
 			}
+			
 		}
-		
 		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
 
 		return dtmcNew;

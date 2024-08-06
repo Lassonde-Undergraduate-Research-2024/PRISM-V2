@@ -418,28 +418,31 @@ public class ZeroDerisavi<Value> extends AbstractBisimulation<Value>{
             }
         }
 		
+		numStates = dtmc.getNumStates();
 		numBlocks = classes.size();
-		DTMCSimple<Value> dtmcNew = new DTMCSimple<>(numBlocks);
 		
-		
-		int[] blockOf = new int[numStates];	
-		int cnt = 0;
+		int[] stateOf = new int[numStates];
+		int id = 0;
 		for(Block block : classes) {
 			for (State s : block.elements) {
-				blockOf[s.id] = cnt;
+				partition[s.id] = id;
+				stateOf[id] = s.id;
 			}
-			cnt++;
+			id++;
 		}
-		
-		for (int i = 0; i < numStates; i++) {
-			int s = blockOf[i];
-			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(i);
+
+		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
+		for(int b = 0; b < numBlocks; b++) {
+			int s = stateOf[b];
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(s);
 			while (iter.hasNext()) {
 				Map.Entry<Integer, Value> e = iter.next();
-				dtmcNew.addToProbability(s, blockOf[e.getKey()], e.getValue());
+				dtmcNew.addToProbability(b, partition[e.getKey()], e.getValue());
 			}
+			
 		}
 		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
+
 		return dtmcNew;
 	}
 	
