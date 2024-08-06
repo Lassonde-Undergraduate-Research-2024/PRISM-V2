@@ -218,6 +218,9 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 			numBlocks++;
 		}
 
+		//long startTime, endTime;
+        	//startTime = System.currentTimeMillis();
+		
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
 	
 		for(int b = 0; b < numBlocks; b++) {
@@ -229,6 +232,14 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 			}
 			
 		}
+<<<<<<< HEAD
+=======
+	
+		//endTime = System.currentTimeMillis();
+		//mainLog.println("Time taken for NewAlgorithem at the end: " + (endTime - startTime) + " milliseconds");
+		
+		
+>>>>>>> 32c006ef865639a5e20611ebb6fc6a6dcf9212c1
 		
 		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
 		return dtmcNew;
