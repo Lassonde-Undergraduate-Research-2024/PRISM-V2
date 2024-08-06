@@ -270,19 +270,28 @@ public class Primitive<Value> extends AbstractBisimulation<Value>{
 			throw new IllegalArgumentException("Expected an instance of DTMCSimple.");
 		   
 		initialisePartitionInfo(dtmc, propBSs); 
-		int[] bl = evaluate((DTMCSimple<Value>) dtmc, propBSs);	
+		partition = evaluate((DTMCSimple<Value>) dtmc, propBSs);	
+		numStates = dtmc.getNumStates();
 		numBlocks = this.start.size();
-		DTMCSimple<Value> dtmcNew = new DTMCSimple<>(numBlocks);
 		
-		for (int i = 0; i < numStates; i++) {
-			int s = bl[i];
-			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(i);
+		int[] stateOf = new int[numStates];
+		for(int s = 0; s < numStates; s++)
+			stateOf[partition[s]] = s;
+			
+
+		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
+		for(int b = 0; b < numBlocks; b++) {
+			//mainLog.println(numStates + "    " + this.start.get(b));
+			int s = stateOf[b];
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(s);
 			while (iter.hasNext()) {
 				Map.Entry<Integer, Value> e = iter.next();
-				dtmcNew.addToProbability(s, bl[e.getKey()], e.getValue());
+				dtmcNew.addToProbability(b, partition[e.getKey()], e.getValue());
 			}
+			
 		}
 		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
+
 		return dtmcNew;
 	}
 		
