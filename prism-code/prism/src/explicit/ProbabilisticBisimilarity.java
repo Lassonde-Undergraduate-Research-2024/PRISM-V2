@@ -3,11 +3,16 @@ package explicit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
+import explicit.DTMCSimple;
+import explicit.Distribution;
+import explicit.ModelSimple;
 import prism.Evaluator;
 import prism.PrismComponent;
 import prism.PrismException;
@@ -147,6 +152,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 			while (numberChecked < numberToCheck) {
 				int maxSize = 0;
 				int maxBlock = 0;
+				int sumOfSizes = 0;
 				int oldBlock = toCheck.get(numberChecked).getOldBlock();
 				while (numberChecked < numberToCheck && toCheck.get(numberChecked).getOldBlock() == oldBlock) { // out of bounds
 					ArrayList<Integer> newBlock = new ArrayList<Integer>();
@@ -162,6 +168,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 						//partition.refine(oldBlock, newBlock);
 						last++;
 						int size = newBlock.size();
+						sumOfSizes += size;
 						if (size > maxSize) { // keep track of largest sub-block of split block
 							maxBlock = last;
 							maxSize = size;
@@ -218,9 +225,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 			numBlocks++;
 		}
 
-		//long startTime, endTime;
-        	//startTime = System.currentTimeMillis();
-		
+
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
 	
 		for(int b = 0; b < numBlocks; b++) {
@@ -232,14 +237,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 			}
 			
 		}
-<<<<<<< HEAD
-=======
-	
-		//endTime = System.currentTimeMillis();
-		//mainLog.println("Time taken for NewAlgorithem at the end: " + (endTime - startTime) + " milliseconds");
-		
-		
->>>>>>> 32c006ef865639a5e20611ebb6fc6a6dcf9212c1
+
 		
 		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
 		return dtmcNew;
