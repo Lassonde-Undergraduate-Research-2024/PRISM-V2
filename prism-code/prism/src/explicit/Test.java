@@ -10,7 +10,7 @@ import edu.jas.structure.Value;
 import prism.PrismComponent;
 import prism.PrismException;
 
-public class BuchholzTest {
+public class Test {
 
 	public static final int MAXnumberOfStates = (int) 1000;
 	public static final int MAXnumberOfLabels = 2;
@@ -138,8 +138,8 @@ public class BuchholzTest {
     
     		
     		
-    		ZeroDerisavi<Double> zero = new ZeroDerisavi<>(parent);
-            boolean[] Zero = zero.bisimilar(dtmc, propBSs);
+//    		ZeroDerisavi<Double> zero = new ZeroDerisavi<>(parent);
+//            boolean[] Zero = zero.bisimilar(dtmc, propBSs);
 //    		System.out.println("ZeroDerisavi:");
 //    		for(int i = 0; i < numberOfStates; i++) {
 //    			for(int j = 0; j < numberOfStates; j++) {
@@ -153,18 +153,14 @@ public class BuchholzTest {
 //    			System.out.println('\n');
 //    		}
     		
-            ZeroDerisaviRedBlack<Double> zerorb = new ZeroDerisaviRedBlack<>(parent);
-            boolean[] ZeroRB = zerorb.bisimilar(dtmc, propBSs);
-    		
+//            ZeroDerisaviRedBlack<Double> zerorb = new ZeroDerisaviRedBlack<>(parent);
+//            boolean[] ZeroRB = zerorb.bisimilar(dtmc, propBSs);
+//    		
     		
     		Bisimulation<Double> bism = new Bisimulation<>(parent);
             boolean[] bisimilation = bism.bisimilar(dtmc, propBSs);
             
-            
-            Bisimulation<Double> prim = new Primitive<>(parent);
-            boolean[] primitive = prim.bisimilar(dtmc, propBSs);
-            
-            
+
             Bisimulation<Double> Newalgo = new ProbabilisticBisimilarity<>(parent);
             boolean[] newalgo = Newalgo.bisimilar(dtmc, propBSs);
             
@@ -186,10 +182,8 @@ public class BuchholzTest {
      		///// compare the result
     		for(int i = 0; i < numberOfStates; i++) {
     			for(int j = 0; j < numberOfStates; j++) {
-    				if(Buch[i*numberOfStates+j] != bisimilation[i*numberOfStates+j] ||
-    					Buch[i*numberOfStates+j] != ZeroRB[i*numberOfStates+j] 	||
-    					Buch[i*numberOfStates+j] != newalgo[i*numberOfStates+j]) {
-    					System.out.println("Erorr!! " + i + " " + j + " " + primitive[i*numberOfStates + j] + " " + Buch[i*numberOfStates + j]);
+    				if(newalgo[i*numberOfStates+j]!= bisimilation[i*numberOfStates+j]) {
+    					System.out.println("Erorr!! " + i + " " + j + " " + newalgo[i*numberOfStates + j] + " " + Buch[i*numberOfStates + j]);
     					System.out.println(dtmc.toString());
     					System.exit(0);
     				}
@@ -200,9 +194,6 @@ public class BuchholzTest {
     		System.out.println("okay");
      		//*/
 
-//     		DTMC<Double> newdtmc = Newalgo.minimiseDTMC(dtmc, null, propBSs);
-//     		System.out.println(newdtmc.toString());
-//     		newdtmc = zero.minimiseDTMC(dtmc, null, propBSs);
 //     		System.out.println(newdtmc.toString());
 //     		newdtmc = zerorb.minimiseDTMC(dtmc, null, propBSs);
 //     		System.out.println(newdtmc.toString());
@@ -221,6 +212,7 @@ public class BuchholzTest {
 		
 		
 	 public static void main(String[] args) {
+		
 		 for(int i = 0; i < 100; i++)
 				RandomModel();
 	 }

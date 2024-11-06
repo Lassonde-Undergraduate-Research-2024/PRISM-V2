@@ -38,9 +38,9 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 	/**
 	 * Decides probabilistic bisimilarity for the given labelled Markov chain.
 	 * 
-	 * @param chain a labelled Markov chain
-	 * @return a two dimensional boolean array that captures for each state pair whether
-	 * the states are probabilistic bisimilar
+	 * @param dtmc The DTMC
+	 * @param propNames Names of the propositions in {@code propBSs}
+	 * 
 	 */
 	public void decide(DTMC<Value> dtmc, List<BitSet> propBSs) {
 		Evaluator<Value> eval = dtmc.getEvaluator();
@@ -176,8 +176,8 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 					}
 				}
 				if (maxSize > Partition.getStates(oldBlock).size()) {
-					Partition.refine(oldBlock);
 
+					Partition.refine(oldBlock);
 					Partition.swap(maxBlock, oldBlock);
 				}
 			}
@@ -187,7 +187,13 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 		return;
 	}
 
-
+	/**
+	 * Perform bisimulation minimisation on a DTMC.
+	 * @param dtmc The DTMC
+	 * @param propBSs Propositions (satisfying sets of states) to be preserved by bisimulation.
+	 * @return a two dimensional boolean array that captures for each state pair whether
+	 * the states are probabilistic bisimilar
+	 */
 	@Override
 	public boolean[] bisimilar(DTMC<Value> dtmc, List<BitSet> propBSs){
 
@@ -209,6 +215,12 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 		return bisimilar;
 	}
 
+	/**
+	 * Perform bisimulation minimisation on a DTMC.
+	 * @param dtmc The DTMC
+	 * @param propNames Names of the propositions in {@code propBSs}
+	 * @param propBSs Propositions (satisfying sets of states) to be preserved by bisimulation.
+	 */
 	@Override
 	protected DTMC<Value> minimiseDTMC(DTMC<Value> dtmc, List<String> propNames, List<BitSet> propBSs){
 

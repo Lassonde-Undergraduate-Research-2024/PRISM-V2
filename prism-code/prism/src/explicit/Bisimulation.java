@@ -82,6 +82,8 @@ public class Bisimulation<Value> extends PrismComponent
 	 */
 	protected DTMC<Value> minimiseDTMC(DTMC<Value> dtmc, List<String> propNames, List<BitSet> propBSs)
 	{
+		double totalTime = 0;
+		long startTimeTotal = System.nanoTime();
 		// Create initial partition based on propositions
 		initialisePartitionInfo(dtmc, propBSs);
 		//printPartition(dtmc);
@@ -90,7 +92,6 @@ public class Bisimulation<Value> extends PrismComponent
 		boolean changed = true;
 		while (changed)
 			changed = splitDTMC(dtmc);
-		mainLog.println("Minimisation: " + numStates + " to " + numBlocks + " States");
 		//printPartition(dtmc);
 
 		// Build reduced model
@@ -100,8 +101,12 @@ public class Bisimulation<Value> extends PrismComponent
 				dtmcNew.setProbability(i, e.getKey(), e.getValue());
 			}
 		}
+		mainLog.println("Minimisation: " + numStates + " to " + numBlocks + " States" + "and" + dtmcNew.getNumTransitions());
 		attachStatesAndLabels(dtmc, dtmcNew, propNames, propBSs);
-
+		
+		long endTimeTotal = System.nanoTime();
+		totalTime += (endTimeTotal - startTimeTotal) / 1_000_000_000.0;
+		System.out.println("!!!!!!!!!!!!!!!Total time taken for the bisim : " + totalTime + " seconds");
 		return dtmcNew;
 	}
 

@@ -94,6 +94,7 @@ public class Partition extends ArrayList<ArrayList<Integer>> {
 	}
 	
 	
+
 	
 	/**
 	 * add all states of newBlock as a new block to this partition.
@@ -118,7 +119,7 @@ public class Partition extends ArrayList<ArrayList<Integer>> {
 	public void refine(int block) {
 		
 		int id = blockToIndex.get(block);
-		 Iterator<Integer> iterator = this.getStates(block).iterator();
+		Iterator<Integer> iterator = this.getStates(block).iterator();
         while (iterator.hasNext()) {
             if (index[iterator.next()] != id) {
                 iterator.remove();
@@ -182,5 +183,13 @@ public class Partition extends ArrayList<ArrayList<Integer>> {
 		}
 		
 		return representation.toString();
+	}
+
+	/**
+	 * Returns the number of blocks
+	 * @return Number of blocks
+	 */
+	public int getNumofBlocks() {
+		return blockToIndex.size();
 	}
 }

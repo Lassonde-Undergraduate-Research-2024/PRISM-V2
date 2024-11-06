@@ -36,3 +36,4 @@ prism/\.project
 # Eclipse project custom settings
 \.settings/
 prism/\.settings/
+/.metadata/

@@ -15,7 +15,11 @@ import edu.jas.structure.Value;
 import prism.Evaluator;
 import prism.PrismComponent;
 import prism.PrismException;
-
+/**
+ * Decides which states of a labelled Markov chain are probabilistic bisimilar.  The implementation
+ * is based on the bisimilarity algorithm from the paper "Efficient computation of
+ * equivalent and reduced representations for stochastic automata" by Peter Buchholz.
+ */
 public class Buchholz<Value> extends AbstractBisimulation<Value>{
 
 	public Buchholz(PrismComponent parent) throws PrismException {
@@ -40,7 +44,14 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 			this.next = 0;
 		}
 	}
-	
+	/**
+	 * Decides probabilistic bisimilarity for the given labelled Markov chain.
+	 * This method calculates equivalence classes of states in a discrete-time Markov chain (DTMC) where
+	 * bisimilar states are grouped together in the same set
+	 * @param dtmc The DTMC
+	 * @param propNames Names of the propositions in {@code propBSs}
+	 * @return A list of sets, where each set represents an equivalence class of bisimilar states.
+	 */
 	public List<Set<Integer>> decide(DTMCSimple<Value> dtmc, List<BitSet> propBSs) {
 	
 		Evaluator<Value> eval = dtmc.getEvaluator();
@@ -119,8 +130,7 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 			}
 		}
 		
-		return classes;
-		
+		return classes;	
 	}
 	
 	

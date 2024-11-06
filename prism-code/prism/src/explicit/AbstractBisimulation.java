@@ -13,6 +13,18 @@ import prism.PrismComponent;
 import prism.PrismException;
 import prism.PrismNotSupportedException;
 
+
+/**
+ * Abstract class that restricts bisimulation minimisation to specific models, 
+ * such as {@link DTMCSimple}, and prevents the use of unsupported models 
+ * (e.g., Continuous-Time Markov Chains (CTMC) or other types of DTMCs). 
+ * This class provides a framework where additional minimisation algorithms 
+ * can be added by extending this class.
+ * 
+ * <p>The goal is to ensure that only the {@link DTMCSimple} model is eligible for 
+ * minimisation, while other models will raise exceptions. Extensions of this class 
+ * can implement the minimisation logic for supported models.</p>
+ */
 public abstract class AbstractBisimulation<Value> extends Bisimulation<Value> {
 
     public AbstractBisimulation(PrismComponent parent) throws PrismException {

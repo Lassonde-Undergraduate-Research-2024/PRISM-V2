@@ -18,7 +18,24 @@ import explicit.ArraysSort;
 import prism.Evaluator;
 import prism.PrismComponent;
 import prism.PrismException;
-
+/**
+ * Implementation of the bisimilarity algorithm from the paper "Simple
+ * O(m.log(n)) Time Markov Chain Lumping" by Antti Valmari and Giuliana
+ * Franceschinis.
+ * 
+ * Uses the second presented data structure (i.e. the more recent one): States
+ * and blocks are represented by numbers. All states (that is, their numbers)
+ * are in an array elems so that states that belong to the same block are next
+ * to each other. The segment for a block is further divided to a first part
+ * that contains the marked states and second part that contains the rest. There
+ * is another array that, given the number of a state, returns its location in
+ * elems. A third array denotes the block that each state belongs to. Three
+ * arrays are indexed by block numbers; they tell where the segment for the
+ * block in elems starts and ends, and where is the borderline between the
+ * marked and other states.
+ * 
+ * @author Zainab Fatmi
+ */
 public class Primitive<Value> extends AbstractBisimulation<Value>{
 
 	public Primitive(PrismComponent parent) throws PrismException {
@@ -262,7 +279,12 @@ public class Primitive<Value> extends AbstractBisimulation<Value>{
 
 	
 	
-	
+	/**
+	 * Perform bisimulation minimisation on a DTMC.
+	 * @param dtmc The DTMC
+	 * @param propNames Names of the propositions in {@code propBSs}
+	 * @param propBSs Propositions (satisfying sets of states) to be preserved by bisimulation.
+	 */
 	@Override
 	protected DTMC<Value> minimiseDTMC(DTMC<Value> dtmc, List<String> propNames, List<BitSet> propBSs)
 	{
@@ -296,7 +318,13 @@ public class Primitive<Value> extends AbstractBisimulation<Value>{
 	}
 		
 
-	
+	/**
+	 * Perform bisimulation minimisation on a DTMC.
+	 * @param dtmc The DTMC
+	 * @param propBSs Propositions (satisfying sets of states) to be preserved by bisimulation.
+	 * @return a two dimensional boolean array that captures for each state pair whether
+	 * the states are probabilistic bisimilar
+	 */
 	@Override
 	public boolean[] bisimilar(DTMC<Value> dtmc, List<BitSet> propBSs){
 		

@@ -294,10 +294,8 @@ public class ZeroDerisavi<Value> extends AbstractBisimulation<Value>{
 	/**
 	 * Decides probabilistic bisimilarity distance zero for the given labelled Markov chain.
 	 * 
-	 * @param chain a labelled Markov chain
-	 * @return a boolean array that captures for each state pair whether
-	 * the states have probabilistic bisimilarity distance zero:
-	 * zero[s * chain.getNumberOfStates() + t] == states s and t have distance zero
+	 * @param dtmc The DTMC
+	 * @param propNames Names of the propositions in {@code propBSs}
 	 */
 	public void decide(DTMCSimple<Value> dtmc, List<BitSet> propBSs) {
 	
@@ -400,7 +398,12 @@ public class ZeroDerisavi<Value> extends AbstractBisimulation<Value>{
 	}
 	
 	
-	
+	/**
+	 * Perform bisimulation minimisation on a DTMC.
+	 * @param dtmc The DTMC
+	 * @param propNames Names of the propositions in {@code propBSs}
+	 * @param propBSs Propositions (satisfying sets of states) to be preserved by bisimulation.
+	 */
 	@Override
 	protected DTMC<Value> minimiseDTMC(DTMC<Value> dtmc, List<String> propNames, List<BitSet> propBSs){
 		
@@ -447,7 +450,13 @@ public class ZeroDerisavi<Value> extends AbstractBisimulation<Value>{
 	}
 	
 	
-	
+	/**
+	 * Perform bisimulation minimisation on a DTMC.
+	 * @param dtmc The DTMC
+	 * @param propBSs Propositions (satisfying sets of states) to be preserved by bisimulation.
+	 * @return a two dimensional boolean array that captures for each state pair whether
+	 * the states are probabilistic bisimilar
+	 */
 	@Override
 	public boolean[] bisimilar(DTMC<Value> dtmc, List<BitSet> propBSs){
 		
