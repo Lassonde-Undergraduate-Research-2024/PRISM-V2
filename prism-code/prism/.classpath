@@ -13,11 +13,7 @@
 	<classpathentry kind="lib" path="lib/log4j-api.jar"/>
 	<classpathentry kind="lib" path="lib/nailgun-server.jar"/>
 	<classpathentry kind="lib" path="/home/hiva/Downloads/lpsolve55j.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/home/hiva/Downloads/prism.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

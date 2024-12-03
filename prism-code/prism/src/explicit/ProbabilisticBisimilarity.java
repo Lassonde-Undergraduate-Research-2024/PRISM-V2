@@ -175,7 +175,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 						}
 					}
 				}
-				if (maxSize > Partition.getStates(oldBlock).size()) {
+				if (maxSize > Partition.getStates(oldBlock).size()-sumOfSizes) {
 
 					Partition.refine(oldBlock);
 					Partition.swap(maxBlock, oldBlock);
