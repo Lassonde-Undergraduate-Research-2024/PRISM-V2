@@ -49,7 +49,7 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 		super(parent);
 	}
 	
-	public static final double ACCURACY = 1E-8;
+	public static final double ACCURACY = 1E-5;
 	public static final int PRECISION = 3;
 	
 	/**
@@ -461,6 +461,7 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 			}
 			id++;
 		}
+		mainLog.println("Minimisation: " + numStates + " to " + numBlocks + " States ");
 
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
 		for(int b = 0; b < numBlocks; b++) {

@@ -12,8 +12,8 @@ import prism.PrismException;
 
 public class Test {
 
-	public static final int MAXnumberOfStates = (int) 1000;
-	public static final int MAXnumberOfLabels = 2;
+	public static final int MAXnumberOfStates = (int) 10;
+	public static final int MAXnumberOfLabels = 1;
 	
 	public static DTMCSimple<Double> GenerateModel(int numberOfStates){
 		
@@ -37,14 +37,12 @@ public class Test {
 				for (int target = 0; target < numberOfStates; target++) {
 					
 					if(probability[target]/outgoing > 0.0) {
-					//	System.out.println(source + " " + target + " " + probability[target]/outgoing);
 						dtmcSimple.setProbability(source, target, probability[target]/outgoing);						
 					}
 					
 				}
 			} else {
 				dtmcSimple.setProbability(source, source, 1.0);
-				//System.out.println(source + " " + source + " " + 1);
 			}
 		}
 		return dtmcSimple;
@@ -67,8 +65,6 @@ public class Test {
 					propBSs.get(i).set(s, false);
 				}
 			}
-			
-			//propBSs.add(bitSet);
 		}
 			
 //		System.out.println("Labels");
@@ -90,100 +86,39 @@ public class Test {
 	
 	 private static void RandomModel() {
         try {
-            PrismComponent parent = new PrismComponent() {
-            };
+           
+        	PrismComponent parent = new PrismComponent() {};
             
-           // System.out.println("--------------------------------------------");
             Random random = new Random();
     		int numberOfStates = random.nextInt(MAXnumberOfStates) + 1;
     		int numberOfLabels = random.nextInt(MAXnumberOfLabels) + 1;
-    		//System.out.println(numberOfStates + " " + numberOfLabels);
     		DTMCSimple<Double> dtmc = GenerateModel(numberOfStates);
     		List<BitSet> propBSs = Generatelabels(numberOfStates, numberOfLabels);
     		
-//            int numberOfStates = 4;
-//            int numberOfLabels = 1;
-//            DTMCSimple<Double> dtmc = new DTMCSimple<Double>(numberOfStates);
-//            double s = 1.0/7.0, ep = 1E-10;
-//            dtmc.setProbability(1, 1, 1.0);
-//            dtmc.setProbability(0, 1, s);
-//            dtmc.setProbability(0, 3, 1.0-s);
-//            dtmc.setProbability(2, 1, s+ep);
-//            dtmc.setProbability(2, 3, 1.0-s-ep);
-//            dtmc.setProbability(3, 3, 1.0);
-//
-//            List<BitSet> propBSs = Generatelabels(numberOfStates, numberOfLabels);
-//            propBSs.get(0).set(0, true);
-//            propBSs.get(0).set(1, false);
-//            propBSs.get(0).set(2, true);
-//            propBSs.get(0).set(3, true);
-//    		System.out.println(dtmc.toString());
-//            
-        
-    		
+
     		Buchholz<Double> buchholz = new Buchholz<>(parent);
             boolean[] Buch = buchholz.bisimilar(dtmc, propBSs);
-//    		System.out.println("buchholz:");
-//    		for(int i = 0; i < numberOfStates; i++) {
-//    			for(int j = 0; j < numberOfStates; j++) {
-//    				if(Buch[i*numberOfStates + j]) {
-//    					System.out.print(1 + " ");						
-//    				}else {
-//    					System.out.print(0 + " ");
-//    				}
-//    				
-//    			}
-//    			System.out.println('\n');
-//    		}
     
     		
+    		ZeroDerisavi<Double> zero = new ZeroDerisavi<>(parent);
+            boolean[] Zero = zero.bisimilar(dtmc, propBSs);
+
     		
-//    		ZeroDerisavi<Double> zero = new ZeroDerisavi<>(parent);
-//            boolean[] Zero = zero.bisimilar(dtmc, propBSs);
-//    		System.out.println("ZeroDerisavi:");
-//    		for(int i = 0; i < numberOfStates; i++) {
-//    			for(int j = 0; j < numberOfStates; j++) {
-//    				if(Zero[i*numberOfStates + j]) {
-//    					System.out.print(1 + " ");						
-//    				}else {
-//    					System.out.print(0 + " ");
-//    				}
-//    				
-//    			}
-//    			System.out.println('\n');
-//    		}
-    		
-//            ZeroDerisaviRedBlack<Double> zerorb = new ZeroDerisaviRedBlack<>(parent);
-//            boolean[] ZeroRB = zerorb.bisimilar(dtmc, propBSs);
-//    		
+            ZeroDerisaviRedBlack<Double> zerorb = new ZeroDerisaviRedBlack<>(parent);
+            boolean[] ZeroRB = zerorb.bisimilar(dtmc, propBSs);    		
     		
     		Bisimulation<Double> bism = new Bisimulation<>(parent);
             boolean[] bisimilation = bism.bisimilar(dtmc, propBSs);
             
-
-            Bisimulation<Double> Newalgo = new ProbabilisticBisimilarity<>(parent);
-            boolean[] newalgo = Newalgo.bisimilar(dtmc, propBSs);
-            
-//     		System.out.println("bisimilation:");
-//     		for(int i = 0; i < numberOfStates; i++) {
-//     			for(int j = 0; j < numberOfStates; j++) {
-//     				if(bisimilation[i*numberOfStates + j]) {
-//     					System.out.print(1 + " ");						
-//     				}else {
-//     					System.out.print(0 + " ");
-//     				}
-//     				
-//     			}
-//     			System.out.println('\n');
-//     		}
-//     		
-//     		
+            Bisimulation<Double> prim = new Primitive<>(parent);
+            boolean[] primitive = prim.bisimilar(dtmc, propBSs);
+            prim.minimiseDTMC(dtmc, null, propBSs);
      		
-     		///// compare the result
+     		// compare the result
     		for(int i = 0; i < numberOfStates; i++) {
     			for(int j = 0; j < numberOfStates; j++) {
-    				if(newalgo[i*numberOfStates+j]!= bisimilation[i*numberOfStates+j]) {
-    					System.out.println("Erorr!! " + i + " " + j + " " + newalgo[i*numberOfStates + j] + " " + Buch[i*numberOfStates + j]);
+    				if(primitive[i*numberOfStates+j] != ZeroRB[i*numberOfStates+j] || ZeroRB[i*numberOfStates+j]!= bisimilation[i*numberOfStates+j] || Zero[i*numberOfStates+j] != Buch[i*numberOfStates+j] || Zero[i*numberOfStates+j] != bisimilation[i*numberOfStates+j]) {
+    					System.out.println("Erorr!! " + i + " " + j + " " + ZeroRB[i*numberOfStates + j] + " " + primitive[i*numberOfStates + j]);
     					System.out.println(dtmc.toString());
     					System.exit(0);
     				}
@@ -191,15 +126,7 @@ public class Test {
     			}
     		}
     		
-    		System.out.println("okay");
-     		//*/
-
-//     		System.out.println(newdtmc.toString());
-//     		newdtmc = zerorb.minimiseDTMC(dtmc, null, propBSs);
-//     		System.out.println(newdtmc.toString());
-//     		newdtmc = bism.minimiseDTMC(dtmc, null, propBSs);
-//     		System.out.println(newdtmc.toString());
-//     		
+    		System.out.println("okay");		
      		
         } catch (PrismException e) {
             e.printStackTrace();
@@ -213,7 +140,7 @@ public class Test {
 		
 	 public static void main(String[] args) {
 		
-		 for(int i = 0; i < 100; i++)
+		 for(int i = 0; i < 1; i++)
 				RandomModel();
 	 }
 	 

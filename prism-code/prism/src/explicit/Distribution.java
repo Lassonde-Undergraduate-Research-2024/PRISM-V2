@@ -51,7 +51,7 @@ public class Distribution<Value> implements FunctionalIterable<Entry<Integer, Va
 	
 	/** Evaluator for manipulating probability values in the distribution (of type {@code Value}) */
 	protected final Evaluator<Value> eval;
-	public static final double ACCURACY = 1E-8;
+	public static final double ACCURACY = 1e-5;
 
 	/**
 	 * Create an empty distribution

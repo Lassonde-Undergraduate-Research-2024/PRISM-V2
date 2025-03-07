@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,8 +44,7 @@ public class Primitive<Value> extends AbstractBisimulation<Value>{
 		super(parent);
 	}
 	
-	public static final double ACCURACY = 1E-8;
-	public static final int PRECISION = 3;
+	public static final double ACCURACY = 1E-5;
 
 	private int[] elems; // a list of states, with states in the same block next to each other
 	private int[] location; // a state's location in elems
@@ -278,6 +279,27 @@ public class Primitive<Value> extends AbstractBisimulation<Value>{
 	}
 
 	
+	public int[] compressArray(int[] arr) {
+		Set<Integer> uniqueSet = new TreeSet<>();
+        for (int num : arr) {
+            uniqueSet.add(num);
+        }
+        
+        numBlocks = uniqueSet.size();
+        
+        Map<Integer, Integer> mapping = new HashMap<>();
+        int index = 0;
+        for (int num : uniqueSet) {
+            mapping.put(num, index++);
+        }
+
+        int[] result = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            result[i] = mapping.get(arr[i]);
+        }
+
+        return result;
+    }
 	
 	/**
 	 * Perform bisimulation minimisation on a DTMC.
@@ -293,14 +315,17 @@ public class Primitive<Value> extends AbstractBisimulation<Value>{
 		   
 		initialisePartitionInfo(dtmc, propBSs); 
 		partition = evaluate((DTMCSimple<Value>) dtmc, propBSs);	
+		partition = compressArray(partition);
 		numStates = dtmc.getNumStates();
-		numBlocks = this.start.size();
+		
+		mainLog.println("Minimisation: " + numStates + " to " + numBlocks + " States ");
+		
 		
 		int[] stateOf = new int[numStates];
 		for(int s = 0; s < numStates; s++)
 			stateOf[partition[s]] = s;
 			
-
+		
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
 		for(int b = 0; b < numBlocks; b++) {
 			//mainLog.println(numStates + "    " + this.start.get(b));

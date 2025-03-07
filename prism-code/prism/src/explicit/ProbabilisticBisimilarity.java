@@ -123,7 +123,10 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 
 		while (first <= last) {
 
-			Arrays.fill(hasBeenChecked, false);
+			//Arrays.fill(hasBeenChecked, false);
+			for(Signature s : toCheck) {
+				hasBeenChecked[s.getState()] = false;
+			}
 			toCheck.clearisFirst();
 			toCheck.clear();
 			for (int block = first; block <= last; block++) { // loop through new blocks created in previous round
@@ -261,7 +264,7 @@ public class ProbabilisticBisimilarity<Value> extends AbstractBisimulation<Value
 		
 		long endTimeTotal = System.nanoTime();
 		totalTime += (endTimeTotal - startTimeTotal) / 1_000_000_000.0;
-		System.out.println("!!!!!!!!!!!!Total time taken for the newalgo : " + totalTime + " seconds");
+		System.out.println("Total time taken for the newalgo : " + totalTime + " seconds");
 		return dtmcNew;
 	}
 

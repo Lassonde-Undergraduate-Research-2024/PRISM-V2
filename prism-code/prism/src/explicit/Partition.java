@@ -145,7 +145,14 @@ public class Partition extends ArrayList<ArrayList<Integer>> {
 	}
 
 
-
+	/**
+	 * Returns the number of blocks
+	 * @return Number of blocks
+	 */
+	public int getNumofBlocks() {
+		return blockToIndex.size();
+	}
+	
 	/**
 	 * Removes all states of the given new block from the block with the given ID
 	 * and add all those states as a new block to this partition.
@@ -201,11 +208,5 @@ public class Partition extends ArrayList<ArrayList<Integer>> {
 		return representation.toString();
 	}
 
-	/**
-	 * Returns the number of blocks
-	 * @return Number of blocks
-	 */
-	public int getNumofBlocks() {
-		return blockToIndex.size();
-	}
+	
 }

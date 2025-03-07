@@ -142,7 +142,10 @@ public class ProbabilisticBisimilarity2<Value> extends AbstractBisimulation<Valu
 		int ft = 0;
 		while(ft < spliters.size()) {
 			
-			Arrays.fill(hasBeenChecked, false);
+			//Arrays.fill(hasBeenChecked, false);
+			for(Signature s : toCheck) {
+				hasBeenChecked[s.getState()] = false;
+			}
 			toCheck.clearisFirst();
 			toCheck.clear();
 			for(int i = ft; i < spliters.size(); i++) {
