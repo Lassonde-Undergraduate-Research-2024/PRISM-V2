@@ -112,7 +112,6 @@ public class Test {
             
             Bisimulation<Double> prim = new Primitive<>(parent);
             boolean[] primitive = prim.bisimilar(dtmc, propBSs);
-            prim.minimiseDTMC(dtmc, null, propBSs);
      		
      		// compare the result
     		for(int i = 0; i < numberOfStates; i++) {
