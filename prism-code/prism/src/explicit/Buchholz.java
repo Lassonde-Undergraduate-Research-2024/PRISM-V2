@@ -10,24 +10,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
+import java.util.AbstractMap.SimpleEntry;
 import edu.jas.structure.Value;
 import prism.Evaluator;
 import prism.PrismComponent;
 import prism.PrismException;
+
 /**
  * Decides which states of a labelled Markov chain are probabilistic bisimilar.  The implementation
  * is based on the bisimilarity algorithm from the paper "Efficient computation of
  * equivalent and reduced representations for stochastic automata" by Peter Buchholz.
  */
-public class Buchholz<Value> extends AbstractBisimulation<Value>{
+public class Buchholz<Value> extends AbstractBisimulation<Value> {
 
 	public Buchholz(PrismComponent parent) throws PrismException {
 		super(parent);
+
 	}
 	
 	public static final double ACCURACY = 1E-5;	
 	public static final int PRECISION = 3;
+	private ArrayList<List<SimpleEntry<Integer, Double>>> transitions;
 	
 	private static class EquivalenceClass {
 		private boolean initialized;
@@ -52,10 +55,8 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 	 * @param propNames Names of the propositions in {@code propBSs}
 	 * @return A list of sets, where each set represents an equivalence class of bisimilar states.
 	 */
-	public List<Set<Integer>> decide(DTMCSimple<Value> dtmc, List<BitSet> propBSs) {
+	public List<Set<Integer>> decide(List<BitSet> propBSs) {
 	
-		Evaluator<Value> eval = dtmc.getEvaluator();
-		numStates = dtmc.getNumStates();
 		List<Integer> indices = new ArrayList<Integer>();
 		for (int state = 0; state < numStates; state++) {	
 			int label = partition[state];
@@ -92,9 +93,12 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 			// computing values
 			Arrays.fill(values, 0);
 			for (int target : classes.get(splitter)) {
-				for (int source = 0; source < numStates; source++) { //source -> target 
-					values[source] += eval.toDouble(dtmc.getProbability(source, target));
+				 for (SimpleEntry<Integer, Double> pair : transitions.get(target)) {
+					int source = pair.getKey();
+					double probability = pair.getValue();
+					values[source] += probability;
 				}
+				
 			}
 			
 
@@ -140,11 +144,29 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 		
 		if (!(dtmc instanceof DTMCSimple)) 
 			throw new IllegalArgumentException("Expected an instance of DTMCSimple.");
-		initialisePartitionInfo(dtmc, propBSs); 
-		List<Set<Integer>> classes = decide((DTMCSimple<Value>) dtmc, propBSs);
-				
 		
 		numStates = dtmc.getNumStates();
+		initialisePartitionInfo(dtmc, propBSs);
+		
+		
+		// Build new model 
+		Evaluator<Value> eval = dtmc.getEvaluator();
+		transitions = new ArrayList<>(numStates);
+		for (int i = 0; i < numStates; i++) {
+		    transitions.add(new ArrayList<>());
+		}
+		for (int source = 0; source < numStates; source++) {
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(source);
+			while (iter.hasNext()) {
+				Map.Entry<Integer, Value> e = iter.next();
+				int target = e.getKey();
+				double probability = eval.toDouble(e.getValue());
+				transitions.get(target).add(new SimpleEntry<>(source, probability));
+			}
+			
+		}
+			
+		List<Set<Integer>> classes = decide(propBSs);		
 		numBlocks = classes.size();
 		
 		int[] stateOf = new int[numStates];
@@ -156,6 +178,7 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 			}
 			id++;
 		}
+		
 		mainLog.println("Minimisation: " + numStates + " to " + numBlocks + " States ");
 		DTMCSimple<Value> dtmcNew = new DTMCSimple<Value>(numBlocks);
 		for(int b = 0; b < numBlocks; b++) {
@@ -180,10 +203,29 @@ public class Buchholz<Value> extends AbstractBisimulation<Value>{
 		
 		if (!(dtmc instanceof DTMCSimple)) 
 			throw new IllegalArgumentException("Expected an instance of DTMCSimple.");
-		   
-		initialisePartitionInfo(dtmc, propBSs); 
 		
-		List<Set<Integer>> classes = decide((DTMCSimple<Value>) dtmc, propBSs);
+		numStates = dtmc.getNumStates();
+		initialisePartitionInfo(dtmc, propBSs);
+		
+		
+		// Build new model 
+		Evaluator<Value> eval = dtmc.getEvaluator();
+		transitions = new ArrayList<>(numStates);
+		for (int i = 0; i < numStates; i++) {
+		    transitions.add(new ArrayList<>());
+		}
+		for (int source = 0; source < numStates; source++) {
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(source);
+			while (iter.hasNext()) {
+				Map.Entry<Integer, Value> e = iter.next();
+				int target = e.getKey();
+				double probability = eval.toDouble(e.getValue());
+				transitions.get(target).add(new SimpleEntry<>(source, probability));
+			}
+			
+		}
+			
+		List<Set<Integer>> classes = decide(propBSs);
 		
 	
 		boolean[] bisimilar = new boolean[numStates * numStates];
