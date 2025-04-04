@@ -27,9 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.AbstractMap.SimpleEntry;
 
 import explicit.DTMCSimple;
 import explicit.ModelSimple;
+import explicit.ZeroDerisavi.Block;
+import explicit.ZeroDerisavi.State;
 import prism.Evaluator;
 import prism.PrismComponent;
 import prism.PrismException;
@@ -51,6 +54,7 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 	
 	public static final double ACCURACY = 1E-5;
 	public static final int PRECISION = 3;
+	private ArrayList<List<SimpleEntry<Integer, Double>>> transitions;
 	
 	/**
 	 * A class to represent the nodes of a splay tree.  Each node of the tree stores 
@@ -325,13 +329,9 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 	 * @param dtmc The DTMC
 	 * @param propNames Names of the propositions in {@code propBSs}
 	 */
-	public void decide(DTMCSimple<Value> dtmc, List<BitSet> propBSs) {
-	
-		Evaluator<Value> eval = dtmc.getEvaluator();
-
+	public void decide(List<BitSet> propBSs) {
+			
 		
-		
-	
 		// start with an empty partition
 		classes = new LinkedList<Block>();
 		
@@ -349,13 +349,15 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 			block.elements.add(state);
 			state.block = block;
 		}
-		for (int source = 0; source < numStates; source++) {
-			for (int target = 0; target < numStates; target++) {
-				double prob = eval.toDouble(dtmc.getProbability(source, target));
-				if (prob != 0.0) {	
-					idToState[target].predecessors.put(idToState[source], prob);
-				}
+		
+
+		for (int target = 0; target < numStates; target++) {
+			 for (SimpleEntry<Integer, Double> pair : transitions.get(target)) {
+				int source = pair.getKey();
+				double prob = pair.getValue();
+				idToState[target].predecessors.put(idToState[source], prob);
 			}
+			
 		}
 		
 		LinkedList<Block> potentialSplitters = new LinkedList<Block>(classes); // potential splitters
@@ -438,7 +440,24 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 		if (!(dtmc instanceof DTMCSimple)) 
 			throw new IllegalArgumentException("Expected an instance of DTMCSimple.");
 		initialisePartitionInfo(dtmc, propBSs); 
-		decide((DTMCSimple<Value>) dtmc, propBSs);
+		
+		// Build new model 
+		Evaluator<Value> eval = dtmc.getEvaluator();
+		transitions = new ArrayList<>(numStates);
+		for (int i = 0; i < numStates; i++) {
+		    transitions.add(new ArrayList<>());
+		}
+		for (int source = 0; source < numStates; source++) {
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(source);
+			while (iter.hasNext()) {
+				Map.Entry<Integer, Value> e = iter.next();
+				int target = e.getKey();
+				double probability = eval.toDouble(e.getValue());
+				transitions.get(target).add(new SimpleEntry<>(source, probability));
+			}
+			
+		}
+		decide(propBSs);
 		
 		// Remove Blocks with empty elements list
         Iterator<Block> iterator = classes.iterator();
@@ -479,6 +498,7 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 	}
 	
 	
+
 	/**
 	 * Perform bisimulation minimisation on a DTMC.
 	 * @param dtmc The DTMC
@@ -494,7 +514,23 @@ public class ZeroDerisaviRedBlack<Value> extends AbstractBisimulation<Value>{
 		   
 		initialisePartitionInfo(dtmc, propBSs); 
 		
-		decide((DTMCSimple<Value>) dtmc, propBSs);
+		// Build new model 
+		Evaluator<Value> eval = dtmc.getEvaluator();
+		transitions = new ArrayList<>(numStates);
+		for (int i = 0; i < numStates; i++) {
+		    transitions.add(new ArrayList<>());
+		}
+		for (int source = 0; source < numStates; source++) {
+			Iterator<Map.Entry<Integer, Value>> iter = dtmc.getTransitionsIterator(source);
+			while (iter.hasNext()) {
+				Map.Entry<Integer, Value> e = iter.next();
+				int target = e.getKey();
+				double probability = eval.toDouble(e.getValue());
+				transitions.get(target).add(new SimpleEntry<>(source, probability));
+			}
+			
+		}
+		decide(propBSs);
 		
 		boolean[] bisimilar = new boolean[numStates * numStates];
 		for (Block block : classes) {
